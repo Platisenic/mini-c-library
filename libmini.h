@@ -135,6 +135,7 @@ extern long errno;
 #define SA_NOCLDWAIT  2		 /* Don't create zombie on child death.  */
 #define SA_SIGINFO    4		 /* Invoke signal-catching function with
 				    three arguments instead of one.  */
+# define SA_RESTORER  0x04000000
 # define SA_ONSTACK   0x08000000 /* Use signal stack by using `sa_restorer'. */
 # define SA_RESTART   0x10000000 /* Restart syscall on signal return.  */
 # define SA_INTERRUPT 0x20000000 /* Historical no-op.  */
@@ -145,6 +146,10 @@ extern long errno;
 #define	SIG_BLOCK     0		 /* Block signals.  */
 #define	SIG_UNBLOCK   1		 /* Unblock signals.  */
 #define	SIG_SETMASK   2		 /* Set the set of blocked signals.  */
+
+#define	SIG_ERR	 ((__sighandler_t) -1)	/* Error return.  */
+#define	SIG_DFL	 ((__sighandler_t)  0)	/* Default action.  */
+#define	SIG_IGN	 ((__sighandler_t)  1)	/* Ignore signal.  */
 
 struct timespec {
 	long	tv_sec;		/* seconds */
@@ -169,6 +174,16 @@ struct timezone {
 typedef struct {
 	unsigned long sig[1];
 } sigset_t;
+
+typedef void (*__sighandler_t)(int);
+typedef void (*__sigrestore_t)(void);
+typedef __sighandler_t sighandler_t;
+struct sigaction {
+	__sighandler_t sa_handler;
+	unsigned long sa_flags;
+	__sigrestore_t sa_restorer;
+	sigset_t sa_mask;
+} ;
 
 /* system calls */
 long sys_read(int fd, char *buf, size_t count);
@@ -208,6 +223,8 @@ long sys_alarm(int seconds);
 long sys_setitimer(int which, struct itimerval *value, struct itimerval *ovalue);
 long sys_rt_sigprocmask(int how, sigset_t *set, sigset_t *oset, size_t sigsetsize);
 long sys_rt_sigpending(sigset_t *set, size_t sigsetsize);
+long sys_rt_sigaction(int sig, const struct sigaction *act, struct sigaction *oact, size_t sigsetsize);
+
 
 /* wrappers */
 ssize_t	read(int fd, char *buf, size_t count);
@@ -257,5 +274,7 @@ int sigdelset(sigset_t *set, int signum);
 int sigismember(const sigset_t *set, int signum);
 int sigprocmask(int how, sigset_t *set, sigset_t *oldset);
 int sigpending(sigset_t *set);
-
+int sigaction(int signum, struct sigaction *act, struct sigaction *oldact);
+sighandler_t signal(int signum, sighandler_t handler);
+void __myrt();
 #endif	/* __LIBMINI_H__ */

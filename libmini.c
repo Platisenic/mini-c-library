@@ -255,6 +255,29 @@ int sigpending(sigset_t *set) {
 	WRAPPER_RETval(int);
 }
 
+int sigaction(int signum, struct sigaction *act, struct sigaction *oldact) {
+	if (act) {
+		act->sa_flags |= SA_RESTORER;
+		act->sa_restorer = &__myrt;
+	}
+	long ret = sys_rt_sigaction(signum, act, oldact, sizeof(sigset_t));
+
+	WRAPPER_RETval(int);
+}
+
+sighandler_t signal(int signum, sighandler_t handler) {
+	struct sigaction act, oldact;
+	act.sa_handler = handler;
+	sigemptyset(&act.sa_mask);
+	act.sa_flags = 0;
+	int ret = sigaction(signum, &act, &oldact);
+	if (ret < 0) {
+		return SIG_ERR;
+	}
+
+	return oldact.sa_handler;
+}
+
 
 #define	PERRMSG_MIN	0
 #define	PERRMSG_MAX	34

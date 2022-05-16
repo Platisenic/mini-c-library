@@ -1,4 +1,4 @@
-PROGS = libmini.so write1 alarm1 alarm2 #alarm3 jmp1
+PROGS = libmini.so write1 alarm1 alarm2 alarm3 #jmp1
 
 .PHONY: all clean
 

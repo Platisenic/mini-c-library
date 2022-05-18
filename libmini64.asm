@@ -113,7 +113,7 @@ __myrt:
 
 	global setjmp:function
 setjmp:
-	mov rcx, [rsp]    ; get return address
+	mov rcx, [rsp]     ; get return address
 
 	mov [rdi], rbx
 	mov [rdi+8], rsp
@@ -124,12 +124,28 @@ setjmp:
 	mov [rdi+48], r15
 	mov [rdi+56], rcx
 
+	mov  rcx, 8        ; sizeof(sigset_t)
+	lea  rdx, [rdi+64] ; oact
+	mov  rsi, 0        ; NULL
+	mov  rdi, 0        ; SIG_BLOCK
+	call	sys_rt_sigprocmask
+
 	mov rax, 0
 	ret
 
 	
 	global longjmp:function
 longjmp:
+	push rdi
+	push rsi
+	mov  rcx, 8        ; sizeof(sigset_t)
+	mov  rdx, 0        ; NULL
+	lea  rsi, [rdi+64] ; nact
+	mov  rdi, 2        ; SIG_SETMASK
+	call	sys_rt_sigprocmask
+	pop  rsi
+	pop  rdi
+
 	mov rbx, [rdi]
 	mov rsp, [rdi+8]
 	mov rbp, [rdi+16]

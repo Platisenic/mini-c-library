@@ -332,18 +332,3 @@ void perror(const char *prefix) {
 	write(2, "\n", 1);
 	return;
 }
-
-#if 0	/* we have an equivalent implementation in assembly */
-unsigned int sleep(unsigned int seconds) {
-	long ret;
-	struct timespec req, rem;
-	req.tv_sec = seconds;
-	req.tv_nsec = 0;
-	ret = sys_nanosleep(&req, &rem);
-	if(ret >= 0) return ret;
-	if(ret == -EINTR) {
-		return rem.tv_sec;
-	}
-	return 0;
-}
-#endif

@@ -1,6 +1,8 @@
 #include "libmini.h"
 
-void handler(int s) { /* do nothing */
+void handler(int s) {
+    char msg[] = "hello\n";
+    write(1, msg, strlen(msg));
 }
 
 int main() {

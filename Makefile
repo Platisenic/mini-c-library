@@ -6,7 +6,7 @@ CFLAGS2 = -c -g -Wall -fno-stack-protector -nostdlib -I. -I.. -DUSEMINI
 LD = ld
 LDFLAGS1 = -shared
 LDFLAGS2 = -m elf_x86_64 --dynamic-linker /lib64/ld-linux-x86-64.so.2 -L. -L.. -lmini
-PROGS = write1 alarm1 alarm2 alarm3 jmp1 jmp2
+PROGS = write1 alarm1 alarm2 alarm3 jmp1 jmp2 test-signal
 PACKNAME = 310552029_hw3
 
 .PHONY: all clean
